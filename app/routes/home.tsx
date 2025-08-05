@@ -1,11 +1,11 @@
 import Navbar from "~/Components/Navbar";
-import type { Route } from "./+types/home";
+//import type { Route } from "./+types/home";
 import ResumeCard from "~/Components/ResumeCard";
 import { usePuterStore } from "~/lib/puter";
 import { Link, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: "Joben" },
     { name: "description", content: "Smart feedback for your dream job" },
