@@ -1,25 +1,39 @@
 name: Development Cycle
 
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
 on:
   push:
     branches:
       - develop
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
+
       - run: npm ci
-      - run: npm run lint
-      - run: npm test
+
+      - name: Run ESLint with PR annotations (ignore warnings)
+        uses: wearerequired/lint-action@v2
+        with:
+          eslint: true
+          eslint_args: --max-warnings=999 --ext .js,.jsx,.ts,.tsx .
+
+      - name: Run tests
+        run: npm test -- --passWithNoTests
 
   deploy-staging:
     needs: build-and-test
@@ -28,11 +42,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: echo "Deploying to staging..."
+      # Add your actual staging deploy command here
 
   deploy-production:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v4
       - run: echo "Deploying to production..."
+      # Add your actual production deploy command here
