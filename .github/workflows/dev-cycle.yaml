@@ -4,10 +4,10 @@ on:
   push:
     branches:
       - develop
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build-and-test:
@@ -18,7 +18,13 @@ jobs:
         with:
           node-version: '18'
       - run: npm ci
-      - run: npm run lint
+
+      - name: Run ESLint with PR annotations
+        uses: wearerequired/lint-action@v2
+        with:
+          eslint: true
+          eslint_args: --max-warnings=0 --ext .js,.jsx,.ts,.tsx .
+
       - run: npm test
 
   deploy-staging:
@@ -32,7 +38,7 @@ jobs:
   deploy-production:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v4
       - run: echo "Deploying to production..."
